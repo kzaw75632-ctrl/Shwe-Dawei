@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>ရွှေထားဝယ် — Social & Ads</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pyidaungsu', sans-serif; background: #f0f2f5; color: #1c1e21; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; margin: 16px auto; max-width: 480px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  h1 { font-size: 24px; color: #1877f2; margin-bottom: 4px; }
+  h2 { font-size: 20px; margin-bottom: 16px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #333; }
+  input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; background: #f9f9f9; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: #1877f2; background: #fff; }
+  .btn { padding: 12px 16px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn.primary { background: #1877f2; color: #fff; }
+  .btn.danger { background: #e41e3f; color: #fff; }
+  .btn.ghost { background: #e4e6eb; color: #333; }
+  .btn.block { width: 100%; margin-top: 16px; }
+  .btn.sm { padding: 8px 12px; font-size: 13px; }
+  .muted { color: #65676b; font-size: 14px; }
+  .tiny { font-size: 12px; }
+  .center { text-align: center; }
+  .msg { margin-top: 12px; font-size: 14px; color: #e41e3f; text-align: center; }
+  .msg.success { color: #1a7a3a; }
+  
+  /* Login */
+  .login-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .brand-logo { width: 64px; height: 64px; background: #1877f2; color: #fff; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+  
+  /* Topbar */
+  .topbar { background: #fff; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
+  .topbar-left { display: flex; align-items: center; gap: 8px; }
+  .logo-sm { background: #1877f2; color: #fff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+  .title { font-weight: 700; font-size: 18px; color: #1877f2; }
+  .chip { background: #e7f3ff; color: #1877f2; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .chip.warn { background: #fff3cd; color: #856404; }
+  .chip.danger { background: #f8d7da; color: #721c24; }
+  
+  /* Nav */
+  .bottom-nav { display: flex; background: #fff; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; z-index: 100; }
+  .nav-btn { flex: 1; padding: 8px 0; border: none; background: none; font-size: 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; color: #65676b; }
+  .nav-btn span { font-size: 11px; margin-top: 2px; }
+  .nav-btn.active { color: #1877f2; }
+  
+  /* Feed */
+  .view { display: none; padding: 12px 12px 80px; max-width: 600px; margin: 0 auto; }
+  .view.active { display: block; }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .chip-btn { padding: 6px 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; font-size: 13px; cursor: pointer; }
+  .chip-btn.active { background: #1877f2; color: #fff; border-color: #1877f2; }
+  .list { display: flex; flex-direction: column; gap: 12px; }
+  .post-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #ddd; }
+  .avatar.big { width: 80px; height: 80px; }
+  .post-img { width: 100%; border-radius: 8px; margin: 8px 0; max-height: 400px; object-fit: cover; }
+  .post-actions { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+  .post-actions button { background: none; border: none; color: #65676b; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .post-actions button.liked { color: #1877f2; font-weight: 600; }
+  .comment-box { margin-top: 10px; display: flex; gap: 8px; }
+  .comment-box input { flex: 1; padding: 8px; border-radius: 20px; }
+  .comment { background: #f0f2f5; padding: 8px 12px; border-radius: 12px; margin-top: 6px; font-size: 13px; }
+  
+  /* Admin */
+  .admin-banner { background: #1c1e21; color: #fff; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 16px; font-weight: 600; }
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; }
+  .user-item { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .user-item .row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  
+  /* Locked */
+  .viber-box { background: #e7f3ff; border-radius: 8px; padding: 16px; text-align: center; margin: 16px 0; }
+  
+  /* Toast */
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 999; max-width: 90%; text-align: center; }
+  
+  /* Lightbox */
+  .lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .lightbox img { max-width: 95%; max-height: 95%; }
+  
+  .searchbar { display: flex; gap: 8px; margin-bottom: 12px; }
+  .searchbar input { flex: 1; }
+  .search-results { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .search-item { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+  .search-item:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<section id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="brand-logo">ရွှေ</div>
+    <h1>ရွှေထားဝယ်</h1>
+    <p class="muted center" style="margin-bottom:16px">Online Social & Service Platform • Version 1.0</p>
+
+    <div class="card">
+      <div id="step1">
+        <label>အကောင့်အမည်</label>
+        <input id="inName" type="text" placeholder="သင့်အမည်" />
+        <label>Gmail</label>
+        <input id="inEmail" type="email" placeholder="you@gmail.com" />
+        <button id="btnSendCode" class="btn primary block">Get Code Gmail သို့ပို့မည်</button>
+        <p class="muted tiny center" style="margin-top:8px">Email OTP ကို Supabase Auth မှ ပို့ပါမည်။</p>
+      </div>
+
+      <div id="step2" hidden>
+        <p class="muted small" style="margin-bottom:12px">Code ကို <b id="sentTo"></b> သို့ ပို့ပြီးပါပြီ။ Inbox / Spam စစ်ပါ။</p>
+        <label>Code (၆ လုံး)</label>
+        <input id="inCode" inputmode="numeric" maxlength="6" placeholder="123456" />
+        <button id="btnVerify" class="btn primary block">ဝင်ရောက်မည်</button>
+        <button id="btnBack" class="btn ghost block">နောက်သို့</button>
+      </div>
+
+      <div id="loginMsg" class="msg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP SCREEN ============ -->
+<section id="screen-app" class="screen">
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="logo-sm">ရွှေ</span>
+      <span class="title">ရွှေထားဝယ်</span>
+    </div>
+    <div class="topbar-right" style="display:flex;gap:8px;align-items:center">
+      <span id="statusChip" class="chip"></span>
+      <button id="btnLogout" class="btn ghost sm">ထွက်</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-feed" class="view active">
+      <div class="toolbar">
+        <select id="feedCategory" class="select" style="padding:6px;border-radius:20px;border:1px solid #ddd">
+          <option value="">အားလုံး</option>
+          <option>ကားမောင်း</option>
+          <option>ဆေးဆိုင်</option>
+          <option>သုံးဘီးအဌါးယာဉ်</option>
+          <option>အခြား</option>
+        </select>
+        <div class="sort-group" id="sortGroup" style="display:flex;gap:6px">
+          <button data-sort="normal" class="chip-btn active">အသစ်</button>
+          <button data-sort="likes" class="chip-btn">Like အများဆုံး</button>
+          <button data-sort="comments" class="chip-btn">Comment အများဆုံး</button>
+        </div>
+      </div>
+
+      <div class="searchbar">
+        <input id="searchUser" placeholder="အမည် / လုပ်ငန်း / ဖုန်း / လိပ်စာ ရှာရန်" />
+        <button id="btnSearch" class="btn primary sm">ရှာ</button>
+      </div>
+      <div id="searchResults" class="search-results" hidden></div>
+
+      <div id="feedList" class="list"></div>
+    </section>
+
+    <section id="view-profile" class="view">
+      <div class="card">
+        <h2>မိမိ Profile</h2>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+          <img id="pfAvatar" class="avatar big" />
+          <div>
+            <input id="pfAvatarFile" type="file" accept="image/*" hidden />
+            <button class="btn sm" onclick="document.getElementById('pfAvatarFile').click()">ဓါတ်ပုံ တင်/ပြင်</button>
+            <p class="muted tiny">သင့်ဓါတ်ပုံသည် အများမြင်ရမည်</p>
+          </div>
+        </div>
+
+        <label>အကောင့်အမည်</label>
+        <input id="pfName" />
+        <label>Gmail</label>
+        <input id="pfEmail" disabled style="background:#eee" />
+        <label>လုပ်ငန်းအမည်</label>
+        <input id="pfBiz" />
+        <label>လုပ်ငန်းအမျိုးအစား</label>
+        <select id="pfBizType">
+          <option>ကားမောင်း</option>
+          <option>ဆေးဆိုင်</option>
+          <option>သုံးဘီးအဌါးယာဉ်</option>
+          <option>အခြား</option>
+        </select>
+        <label>မွေးသက္ကရာဇ်</label>
+        <input id="pfDob" type="date" />
+        <label>လိပ်စာ</label>
+        <input id="pfAddress" />
+        <label>ဖုန်းနံပါတ်</label>
+        <input id="pfPhone" placeholder="09xxxxxxxxx" />
+        <button id="btnSaveProfile" class="btn primary block">သိမ်းဆည်း</button>
+      </div>
+
+      <div class="card">
+        <h3>App Info</h3>
+        <p class="muted small">Version: <b id="verApp">1.0</b></p>
+        <p class="muted small">နောက်ဆုံး Update: <b id="verDate">-</b></p>
+        <p class="muted small" id="verChangelog">-</p>
+      </div>
+    </section>
+
+    <section id="view-post" class="view">
+      <div class="card">
+        <h2 id="postFormTitle">ကြော်ငြာ တင်ရန်</h2>
+        <label>ခေါင်းစဉ်</label>
+        <input id="poTitle" placeholder="ဥပမာ — ကားအရောင်း" />
+        <label>အကြောင်းအရာ</label>
+        <textarea id="poContent" rows="4" placeholder="အသေးစိတ် ရေးပါ..."></textarea>
+        <label>ဈေးနှုန်း (ကျပ်)</label>
+        <input id="poPrice" type="number" placeholder="0" />
+        <label>အမျိုးအစား</label>
+        <select id="poCategory">
+          <option>ကားမောင်း</option>
+          <option>ဆေးဆိုင်</option>
+          <option>သုံးဘီးအဌါးယာဉ်</option>
+          <option>အခြား</option>
+        </select>
+        <label>ဓါတ်ပုံ</label>
+        <input id="poImage" type="file" accept="image/*" />
+        <img id="poPreview" style="width:100%;border-radius:8px;margin-top:8px;display:none" />
+        <button id="btnSavePost" class="btn primary block">Post တင်မည်</button>
+        <button id="btnCancelEdit" class="btn ghost block" hidden>မလုပ်တော့ပါ</button>
+      </div>
+    </section>
+
+    <section id="view-report" class="view">
+      <div class="card">
+        <h2>တိုင်ကြားရန်</h2>
+        <p class="muted small">ညစ်ညမ်းသော Post / မသင့်လျော်သော အကြောင်းအရာ တင်ခြင်းများကို တိုင်ကြားနိုင်ပါသည်။</p>
+        <label>တိုင်ကြားလိုသော အမည် / လုပ်ငန်းအမည်</label>
+        <input id="rpTarget" placeholder="ဥပမာ — ဦးမောင် / မောင်စတိုး" />
+        <label>လိပ်စာ</label>
+        <input id="rpAddress" placeholder="လိပ်စာ" />
+        <label>အကြောင်းအရာ</label>
+        <textarea id="rpReason" rows="3" placeholder="ဘာကြောင့် တိုင်ကြားလိုသည် ရေးပါ..."></textarea>
+        <button id="btnReport" class="btn danger block">Report တင်မည်</button>
+      </div>
+    </section>
+
+    <section id="view-admin" class="view">
+      <div class="admin-banner">🔒 Super Admin — VIP Room</div>
+      <div class="admin-tabs">
+        <button data-tab="pending" class="chip-btn active">Pending / Users</button>
+        <button data-tab="renewals" class="chip-btn">တိုးရန် တောင်းဆိုမှု</button>
+        <button data-tab="reports" class="chip-btn">တိုင်ကြားချက်</button>
+        <button data-tab="posts" class="chip-btn">Post စစ်ဆေး</button>
+      </div>
+      <div id="adminPending" class="admin-panel active">
+        <div class="searchbar">
+          <input id="adminSearch" placeholder="အမည် / လုပ်ငန်းအမည် ရိုက်ရှာပါ" />
+          <button id="btnAdminSearch" class="btn primary sm">ရှာ</button>
+        </div>
+        <div id="adminUserList" class="list"></div>
+      </div>
+      <div id="adminRenewals" class="admin-panel">
+        <div id="adminRenewalList" class="list"></div>
+      </div>
+      <div id="adminReports" class="admin-panel">
+        <div id="adminReportList" class="list"></div>
+      </div>
+      <div id="adminPosts" class="admin-panel">
+        <div id="adminPostList" class="list"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button data-view="feed" class="nav-btn active">🏠<span>Social</span></button>
+    <button data-view="post" class="nav-btn">➕<span>ကြော်ငြာ</span></button>
+    <button data-view="report" class="nav-btn">🚩<span>တိုင်ကြား</span></button>
+    <button data-view="profile" class="nav-btn">👤<span>Profile</span></button>
+    <button data-view="admin" class="nav-btn" id="navAdmin" hidden>🛡️<span>Admin</span></button>
+  </nav>
+</section>
+
+<!-- ============ LOCKED SCREEN ============ -->
+<section id="screen-locked" class="screen">
+  <div class="login-wrap">
+    <div class="card">
+      <h2 id="lockTitle">သက်တမ်း ကုန်ဆုံးပါပြီ</h2>
+      <p id="lockMsg" class="muted"></p>
+      <div class="viber-box">
+        <p>သက်တမ်းတိုးရန် ဆက်သွယ်ပါ</p>
+        <a id="viberLink" class="btn primary block" href="viber://chat?number=09422222535">📞 Viber: 09422222535</a>
+      </div>
+      <button id="btnRequestRenew" class="btn block">သက်တမ်းတိုးရန် တောင်းဆိုမည်</button>
+      <button id="btnLockLogout" class="btn ghost block">ထွက်ရန်</button>
+      <div id="lockMsgBox" class="msg"></div>
+    </div>
+  </div>
+</section>
+
+<div id="lightbox" class="lightbox" hidden><img id="lightboxImg" /></div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// =====================================================
+// ⚠️ ဒီနေရာမှာ သင့် Supabase URL နဲ့ Key ကို အစားထိုးပါ
+// =====================================================
+const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== STATE =====
+let currentUser = null;
+let currentProfile = null;
+let pendingEmail = '';
+let pendingName = '';
+let editPostId = null;
+let currentSort = 'normal';
+let currentCategory = '';
+
+// ===== HELPERS =====
+const $ = (id) => document.getElementById(id);
+const showScreen = (id) => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+};
+const showView = (id) => {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.nav-btn[data-view="${id.replace('view-','')}"]`)?.classList.add('active');
+};
+const toast = (msg, ms = 3000) => {
+  const t = $('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  setTimeout(() => t.hidden = true, ms);
+};
+const setMsg = (id, text, ok = false) => {
+  const el = $(id);
+  el.textContent = text;
+  el.className = 'msg' + (ok ? ' success' : '');
+};
+
+// ===== LOGIN FLOW =====
+$('btnSendCode').onclick = async () => {
+  const name = $('inName').value.trim();
+  const email = $('inEmail').value.trim().toLowerCase();
+  if (!name) return setMsg('loginMsg', 'အမည် ထည့်ပါ');
+  if (!email || !email.includes('@')) return setMsg('loginMsg', 'Gmail မှန်ကန်စွာ ထည့်ပါ');
+
+  setMsg('loginMsg', 'ပို့နေသည်...', true);
+  pendingEmail = email;
+  pendingName = name;
+
+  // Super Admin bypass OTP
+  if (email === 'kzaw75632@gmail.com' && name.toLowerCase() === 'admin') {
+    setMsg('loginMsg', 'Super Admin ဝင်ရောက်နေသည်...', true);
+    await loginSuperAdmin(email, name);
+    return;
+  }
+
+  const { error } = await sb.auth.signInWithOtp({
+    email: email,
+    options: { shouldCreateUser: true }
+  });
+
+  if (error) {
+    setMsg('loginMsg', 'Error: ' + error.message);
+  } else {
+    setMsg('loginMsg', '');
+    $('sentTo').textContent = email;
+    $('step1').hidden = true;
+    $('step2').hidden = false;
+  }
+};
+
+$('btnVerify').onclick = async () => {
+  const code = $('inCode').value.trim();
+  if (!code || code.length < 6) return setMsg('loginMsg', 'Code ၆ လုံး ထည့်ပါ');
+
+  setMsg('loginMsg', 'စစ်ဆေးနေသည်...', true);
+  const { data, error } = await sb.auth.verifyOtp({
+    email: pendingEmail,
+    token: code,
+    type: 'email'
+  });
+
+  if (error) {
+    setMsg('loginMsg', 'Code မှားနေသည် သို့မဟုတ် သက်တမ်းကုန်သွားပါပြီ');
+    return;
+  }
+
+  await loginUser(data.user, pendingName);
+};
+
+$('btnBack').onclick = () => {
+  $('step1').hidden = false;
+  $('step2').hidden = true;
+  setMsg('loginMsg', '');
+};
+
+async function loginSuperAdmin(email, name) {
+  let { data: profile } = await sb.from('profiles').select('*').eq('email', email).maybeSingle();
+  if (!profile) {
+    const { data: created } = await sb.from('profiles').insert({
+      email, name, role: 'super_admin', status: 'active',
+      trial_start: new Date().toISOString(),
+      trial_end: new Date(Date.now() + 3650 * 86400000).toISOString(),
+      plan_months: 120
+    }).select().single();
+    profile = created;
+  } else {
+    await sb.from('profiles').update({ role: 'super_admin', status: 'active' }).eq('id', profile.id);
+    profile.role = 'super_admin';
+    profile.status = 'active';
+  }
+  currentUser = { email, id: profile.id };
+  currentProfile = profile;
+  localStorage.setItem('shwe_user', JSON.stringify({ email, name, id: profile.id }));
+  enterApp();
+}
+
+async function loginUser(authUser, name) {
+  const email = authUser.email.toLowerCase();
+  let { data: profile } = await sb.from('profiles').select('*').eq('email', email).maybeSingle();
+
+  if (!profile) {
+    const now = new Date();
+    const trialEnd = new Date(now.getTime() + 30 * 86400000);
+    const { data: created, error } = await sb.from('profiles').insert({
+      email, name,
+      trial_start: now.toISOString(),
+      trial_end: trialEnd.toISOString(),
+      plan_months: 1,
+      role: 'user',
+      status: 'active'
+    }).select().single();
+    if (error) return setMsg('loginMsg', 'Profile ဖန်တီးမရပါ: ' + error.message);
+    profile = created;
+  }
+
+  currentUser = { email, id: profile.id };
+  currentProfile = profile;
+  localStorage.setItem('shwe_user', JSON.stringify({ email, name, id: profile.id }));
+  enterApp();
+}
+
+// ===== SESSION RESTORE =====
+(async () => {
+  const saved = localStorage.getItem('shwe_user');
+  if (saved) {
+    try {
+      const { email, name, id } = JSON.parse(saved);
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', id).maybeSingle();
+      if (profile) {
+        currentUser = { email, id };
+        currentProfile = profile;
+        enterApp();
+        return;
+      }
+    } catch (e) { console.warn(e); }
+  }
+  showScreen('screen-login');
+})();
+
+// ===== ENTER APP =====
+function enterApp() {
+  const now = new Date();
+  const trialEnd = currentProfile.trial_end ? new Date(currentProfile.trial_end) : null;
+
+  // Check locked / banned
+  if (currentProfile.is_banned) {
+    showScreen('screen-locked');
+    $('lockTitle').textContent = 'အကောင့် ပိတ်ထားပါသည်';
+    $('lockMsg').textContent = 'သင့်အကောင့်ကို ပိတ်ထားပါသည်။ ဆက်သွယ်ပါ။';
+    return;
+  }
+
+  // Super admin bypass trial
+  if (currentProfile.role !== 'super_admin' && trialEnd && trialEnd < now && currentProfile.status !== 'active') {
+    showScreen('screen-locked');
+    $('lockMsg').textContent = 'သက်တမ်း ကုန်ဆုံးပါပြီ။ သက်တမ်းတိုးရန် ဆက်သွယ်ပါ။';
+    return;
+  }
+
+  showScreen('screen-app');
+  updateStatusChip();
+  loadProfile();
+  loadFeed();
+  loadAppInfo();
+
+  if (currentProfile.role === 'super_admin') {
+    $('navAdmin').hidden = false;
+  }
+}
+
+function updateStatusChip() {
+  const chip = $('statusChip');
+  if (currentProfile.role === 'super_admin') {
+    chip.textContent = '🛡️ Super Admin';
+    chip.className = 'chip';
+    return;
+  }
+  const trialEnd = new Date(currentProfile.trial_end);
+  const daysLeft = Math.ceil((trialEnd - new Date()) / 86400000);
+  if (daysLeft > 0) {
+    chip.textContent = `⏳ ${daysLeft} ရက်`;
+    chip.className = 'chip' + (daysLeft <= 5 ? ' warn' : '');
+  } else {
+    chip.textContent = '❌ ကုန်ဆုံး';
+    chip.className = 'chip danger';
+  }
+}
+
+// ===== LOGOUT =====
+$('btnLogout').onclick = logout;
+$('btnLockLogout').onclick = logout;
+function logout() {
+  localStorage.removeItem('shwe_user');
+  sb.auth.signOut();
+  location.reload();
+}
+
+// ===== NAV =====
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.onclick = () => {
+    const view = btn.dataset.view;
+    if (view === 'admin' && currentProfile.role !== 'super_admin') return;
+    showView('view-' + view);
+    if (view === 'feed') loadFeed();
+    if (view === 'admin') loadAdmin();
+  };
+});
+
+// ===== PROFILE =====
+async function loadProfile() {
+  if (!currentProfile) return;
+  $('pfName').value = currentProfile.name || '';
+  $('pfEmail').value = currentProfile.email || '';
+  $('pfBiz').value = currentProfile.business_name || '';
+  $('pfBizType').value = currentProfile.business_type || 'ကားမောင်း';
+  $('pfDob').value = currentProfile.dob || '';
+  $('pfAddress').value = currentProfile.address || '';
+  $('pfPhone').value = currentProfile.phone || '';
+  $('pfAvatar').src = currentProfile.avatar_url || 'https://via.placeholder.com/80?text=Avatar';
+}
+
+$('btnSaveProfile').onclick = async () => {
+  const updates = {
+    name: $('pfName').value.trim(),
+    business_name: $('pfBiz').value.trim(),
+    business_type: $('pfBizType').value,
+    dob: $('pfDob').value || null,
+    address: $('pfAddress').value.trim(),
+    phone: $('pfPhone').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await sb.from('profiles').update(updates).eq('id', currentProfile.id);
+  if (error) return toast('Error: ' + error.message);
+  Object.assign(currentProfile, updates);
+  toast('သိမ်းဆည်းပြီးပါပြီ ✅', 2000);
+};
+
+$('pfAvatarFile').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const dataUrl = reader.result;
+    const { error } = await sb.from('profiles').update({ avatar_url: dataUrl }).eq('id', currentProfile.id);
+    if (error) return toast('Error: ' + error.message);
+    currentProfile.avatar_url = dataUrl;
+    $('pfAvatar').src = dataUrl;
+    toast('ဓါတ်ပုံ တင်ပြီးပါပြီ ✅', 2000);
+  };
+  reader.readAsDataURL(file);
+};
+
+// ===== APP INFO =====
+async function loadAppInfo() {
+  const { data } = await sb.from('app_settings').select('*');
+  if (data) {
+    const map = {};
+    data.forEach(r => map[r.key] = r.value);
+    $('verApp').textContent = map.version || '1.0';
+    $('verDate').textContent = map.updated_at || '-';
+    $('verChangelog').textContent = map.changelog || '-';
+  }
+}
+
+// ===== FEED =====
+async function loadFeed() {
+  const list = $('feedList');
+  list.innerHTML = '<p class="muted center">ဖတ်နေသည်...</p>';
+
+  let query = sb.from('posts').select('*, profiles(name, business_name, business_type, phone, address, avatar_url)').eq('status', 'active');
+  if (currentCategory) query = query.eq('category', currentCategory);
+
+  if (currentSort === 'likes') query = query.order('like_count', { ascending: false });
+  else if (currentSort === 'comments') query = query.order('comment_count', { ascending: false });
+  else query = query.order('created_at', { ascending: false });
+
+  const { data, error } = await query.limit(50);
+  if (error) { list.innerHTML = `<p class="muted center">Error: ${error.message}</p>`; return; }
+  if (!data || data.length === 0) { list.innerHTML = '<p class="muted center">Post မရှိသေးပါ</p>'; return; }
+
+  list.innerHTML = '';
+  for (const p of data) {
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    const avatar = p.profiles?.avatar_url || 'https://via.placeholder.com/40';
+    const author = p.profiles?.name || 'Unknown';
+    const biz = p.profiles?.business_name || '';
+    const cat = p.category || '';
+    const img = p.image_url ? `<img src="${p.image_url}" class="post-img" onclick="viewImage('${p.image_url}')" />` : '';
+    const price = p.price ? `<p style="font-weight:700;color:#1877f2;margin-top:4px">${Number(p.price).toLocaleString()} ကျပ်</p>` : '';
+    const isOwner = p.user_id === currentProfile.id;
+    const ownerBtns = isOwner ? `<button onclick="editPost('${p.id}')" style="color:#1877f2">✏️ Edit</button><button onclick="deletePost('${p.id}')" style="color:#e41e3f">🗑️ Delete</button>` : '';
+
+    card.innerHTML = `
+      <div class="post-head">
+        <img src="${avatar}" class="avatar" />
+        <div>
+          <div style="font-weight:600;cursor:pointer" onclick="searchByUser('${p.profiles?.phone || ''}','${author}')">${author}</div>
+          <div class="muted tiny">${biz} ${cat ? '• ' + cat : ''}</div>
+        </div>
+      </div>
+      <h3 style="margin-bottom:4px">${p.title || ''}</h3>
+      <p style="font-size:14px;color:#444">${(p.content || '').replace(/\n/g, '<br>')}</p>
+      ${price}
+      ${img}
+      <div class="post-actions">
+        <button onclick="likePost('${p.id}')" class="${p._liked ? 'liked' : ''}">❤️ ${p.like_count}</button>
+        <button onclick="toggleComment('${p.id}')">💬 ${p.comment_count}</button>
+        ${ownerBtns}
+      </div>
+      <div id="comments-${p.id}" style="display:none;margin-top:8px">
+        <div class="comment-box">
+          <input id="ci-${p.id}" placeholder="Comment ရေးပါ..." />
+          <button class="btn primary sm" onclick="addComment('${p.id}')">ပို့</button>
+        </div>
+        <div id="cl-${p.id}"></div>
+      </div>
+    `;
+    list.appendChild(card);
+  }
+}
+
+$('feedCategory').onchange = (e) => { currentCategory = e.target.value; loadFeed(); };
+document.querySelectorAll('#sortGroup button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#sortGroup button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentSort = b.dataset.sort;
+    loadFeed();
+  };
+});
+
+// ===== LIKE / COMMENT =====
+window.likePost = async (postId) => {
+  const { data: existing } = await sb.from('post_likes').select('*').eq('post_id', postId).eq('user_id', currentProfile.id).maybeSingle();
+  if (existing) {
+    await sb.from('post_likes').delete().eq('id', existing.id);
+  } else {
+    await sb.from('post_likes').insert({ post_id: postId, user_id: currentProfile.id });
+  }
+  loadFeed();
+};
+
+window.toggleComment = async (postId) => {
+  const el = $(`comments-${postId}`);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    const { data } = await sb.from('post_comments').select('*, profiles(name)').eq('post_id', postId).order('created_at', { ascending: true });
+    const cl = $(`cl-${postId}`);
+    cl.innerHTML = (data || []).map(c => `<div class="comment"><b>${c.profiles?.name || 'User'}:</b> ${c.content}</div>`).join('');
+  } else {
+    el.style.display = 'none';
+  }
+};
+
+window.addComment = async (postId) => {
+  const input = $(`ci-${postId}`);
+  const content = input.value.trim();
+  if (!content) return;
+  await sb.from('post_comments').insert({ post_id: postId, user_id: currentProfile.id, content });
+  input.value = '';
+  toggleComment(postId);
+  toggleComment(postId);
+};
+
+// ===== POST CREATE / EDIT =====
+$('btnSavePost').onclick = async () => {
+  const title = $('poTitle').value.trim();
+  const content = $('poContent').value.trim();
+  const price = parseFloat($('poPrice').value) || 0;
+  const category = $('poCategory').value;
+  const imageFile = $('poImage').files[0];
+
+  if (!title && !content) return toast('ခေါင်းစဉ် သို့မဟုတ် အကြောင်းအရာ ထည့်ပါ');
+
+  let image_url = editPostId ? (await sb.from('posts').select('image_url').eq('id', editPostId).single()).data?.image_url : '';
+
+  if (imageFile) {
+    const reader = new FileReader();
+    image_url = await new Promise(res => { reader.onload = () => res(reader.result); reader.readAsDataURL(imageFile); });
+  }
+
+  const payload = { title, content, price, category, image_url, updated_at: new Date().toISOString() };
+
+  if (editPostId) {
+    await sb.from('posts').update(payload).eq('id', editPostId);
+    toast('ပြင်ပြီးပါပြီ ✅', 2000);
+  } else {
+    payload.user_id = currentProfile.id;
+    await sb.from('posts').insert(payload);
+    toast('Post တင်ပြီးပါပြီ ✅', 2000);
+  }
+
+  resetPostForm();
+  showView('view-feed');
+  loadFeed();
+};
+
+window.editPost = async (id) => {
+  const { data } = await sb.from('posts').select('*').eq('id', id).single();
+  if (!data) return;
+  editPostId = id;
+  $('postFormTitle').textContent = 'ကြော်ငြာ ပြင်ရန်';
+  $('poTitle').value = data.title || '';
+  $('poContent').value = data.content || '';
+  $('poPrice').value = data.price || '';
+  $('poCategory').value = data.category || 'အခြား';
+  if (data.image_url) { $('poPreview').src = data.image_url; $('poPreview').style.display = 'block'; }
+  $('btnCancelEdit').hidden = false;
+  showView('view-post');
+};
+
+window.deletePost = async (id) => {
+  if (!confirm('ဖျက်ရန် သေချာပါသလား?')) return;
+  await sb.from('posts').update({ status: 'deleted' }).eq('id', id);
+  toast('ဖျက်ပြီးပါပြီ', 2000);
+  loadFeed();
+};
+
+$('btnCancelEdit').onclick = resetPostForm;
+function resetPostForm() {
+  editPostId = null;
+  $('postFormTitle').textContent = 'ကြော်ငြာ တင်ရန်';
+  $('poTitle').value = '';
+  $('poContent').value = '';
+  $('poPrice').value = '';
+  $('poImage').value = '';
+  $('poPreview').style.display = 'none';
+  $('btnCancelEdit').hidden = true;
+}
+
+// ===== SEARCH =====
+$('btnSearch').onclick = async () => {
+  const q = $('searchUser').value.trim();
+  if (!q) return;
+  const { data } = await sb.from('profiles').select('*').or(`name.ilike.%${q}%,business_name.ilike.%${q}%,phone.ilike.%${q}%,address.ilike.%${q}%`).limit(20);
+  const box = $('searchResults');
+  box.hidden = false;
+  if (!data || data.length === 0) { box.innerHTML = '<p class="muted">မတွေ့ပါ</p>'; return; }
+  box.innerHTML = data.map(u => `
+    <div class="search-item" onclick="searchByUser('${u.phone || ''}','${u.name}')">
+      <b>${u.name}</b> — ${u.business_name || ''}<br>
+      <span class="muted tiny">${u.phone || ''} • ${u.address || ''}</span>
+    </div>
+  `).join('');
+};
+
+window.searchByUser = async (phone, name) => {
+  showView('view-feed');
+  const list = $('feedList');
+  list.innerHTML = '<p class="muted center">ရှာနေသည်...</p>';
+  const { data } = await sb.from('posts').select('*, profiles(name, business_name, phone, address, avatar_url)').eq('status', 'active').order('created_at', { ascending: false });
+  const filtered = (data || []).filter(p => p.profiles?.phone === phone || p.profiles?.name === name);
+  $('searchResults').hidden = true;
+  if (filtered.length === 0) { list.innerHTML = '<p class="muted center">ကြော်ငြာ မတွေ့ပါ</p>'; return; }
+  list.innerHTML = '';
+  for (const p of filtered) {
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML = `
+      <div class="post-head">
+        <img src="${p.profiles?.avatar_url || 'https://via.placeholder.com/40'}" class="avatar" />
+        <div><div style="font-weight:600">${p.profiles?.name}</div><div class="muted tiny">${p.profiles?.business_name || ''}</div></div>
+      </div>
+      <h3>${p.title}</h3><p>${p.content}</p>
+      ${p.image_url ? `<img src="${p.image_url}" class="post-img" />` : ''}
+    `;
+    list.appendChild(card);
+  }
+};
+
+// ===== REPORT =====
+$('btnReport').onclick = async () => {
+  const target = $('rpTarget').value.trim();
+  const address = $('rpAddress').value.trim();
+  const reason = $('rpReason').value.trim();
+  if (!target || !reason) return toast('အမည်နှင့် အကြောင်းအရာ ထည့်ပါ');
+  await sb.from('reports').insert({
+    reporter_id: currentProfile.id,
+    reporter_name: currentProfile.name,
+    target_name: target, address, reason
+  });
+  $('rpTarget').value = ''; $('rpAddress').value = ''; $('rpReason').value = '';
+  toast('တိုင်ကြားချက် ပို့ပြီးပါပြီ ✅', 2000);
+};
+
+// ===== ADMIN =====
+document.querySelectorAll('.admin-tabs .chip-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.admin-tabs .chip-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+    $('admin' + b.dataset.tab.charAt(0).toUpperCase() + b.dataset.tab.slice(1)).classList.add('active');
+  };
+});
+
+async function loadAdmin() {
+  if (currentProfile.role !== 'super_admin') return;
+  loadAdminUsers();
+  loadAdminRenewals();
+  loadAdminReports();
+  loadAdminPosts();
+}
+
+async function loadAdminUsers() {
+  const { data } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+  const list = $('adminUserList');
+  list.innerHTML = '';
+  for (const u of (data || [])) {
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    const trialEnd = u.trial_end ? new Date(u.trial_end).toLocaleDateString() : '-';
+    const statusColor = u.is_banned ? '#e41e3f' : (u.status === 'active' ? '#1a7a3a' : '#856404');
+    item.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><b>${u.name}</b> ${u.role === 'super_admin' ? '🛡️' : ''}<br><span class="muted tiny">${u.email}</span></div>
+        <span class="chip" style="background:${statusColor}20;color:${statusColor}">${u.is_banned ? 'BANNED' : u.status}</span>
+      </div>
+      <div class="muted tiny" style="margin-top:6px">လုပ်ငန်း: ${u.business_name || '-'} • ဖုန်း: ${u.phone || '-'}</div>
+      <div class="muted tiny">Trial End: ${trialEnd} • Plan: ${u.plan_months} လ</div>
+      <div class="row">
+        <select id="grant-${u.id}" style="flex:1;padding:6px;border-radius:6px;border:1px solid #ddd">
+          <option value="1">1 လ</option><option value="2">2 လ</option><option value="3">3 လ</option>
+          <option value="4">4 လ</option><option value="5">5 လ</option><option value="6">6 လ</option>
+          <option value="7">7 လ</option><option value="8">8 လ</option><option value="9">9 လ</option>
+          <option value="10">10 လ</option><option value="11">11 လ</option><option value="12">1 နှစ်</option>
+          <option value="24">2 နှစ်</option><option value="36">3 နှစ်</option>
+          <option value="48">4 နှစ်</option><option value="60">5 နှစ်</option>
+        </select>
+        <button class="btn primary sm" onclick="grantAccess('${u.id}')">Open</button>
+        <button class="btn ghost sm" onclick="toggleBan('${u.id}', ${u.is_banned})">${u.is_banned ? 'Unban' : 'Ban'}</button>
+        <button class="btn danger sm" onclick="deleteUser('${u.id}')">ဖျက်</button>
+      </div>
+    `;
+    list.appendChild(item);
+  }
+}
+
+window.grantAccess = async (id) => {
+  const months = parseInt($('grant-' + id).value);
+  const trialEnd = new Date(Date.now() + months * 30 * 86400000);
+  await sb.from('profiles').update({
+    trial_end: trialEnd.toISOString(),
+    plan_months: months,
+    status: 'active',
+    is_banned: false
+  }).eq('id', id);
+  toast(`${months} လ ခွင့်ပြုပြီးပါပြီ ✅`, 2000);
+  loadAdminUsers();
+};
+
+window.toggleBan = async (id, isBanned) => {
+  await sb.from('profiles').update({ is_banned: !isBanned, status: !isBanned ? 'banned' : 'active' }).eq('id', id);
+  toast(isBanned ? 'Unban လုပ်ပြီးပါပြီ' : 'Ban လုပ်ပြီးပါပြီ', 2000);
+  loadAdminUsers();
+};
+
+window.deleteUser = async (id) => {
+  if (!confirm('ဖျက်ရန် သေချာပါသလား?')) return;
+  await sb.from('profiles').delete().eq('id', id);
+  toast('ဖျက်ပြီးပါပြီ', 2000);
+  loadAdminUsers();
+};
+
+async function loadAdminRenewals() {
+  const { data } = await sb.from('renewals').select('*').order('created_at', { ascending: false });
+  const list = $('adminRenewalList');
+  list.innerHTML = (data || []).length === 0 ? '<p class="muted center">တောင်းဆိုမှု မရှိပါ</p>' : '';
+  for (const r of (data || [])) {
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    item.innerHTML = `
+      <b>${r.name}</b> — ${r.business_name || ''}<br>
+      <span class="muted tiny">${r.phone || ''} • ${r.email || ''}</span>
+      <p class="muted small">${r.message || ''}</p>
+      <div class="row">
+        <button class="btn primary sm" onclick="approveRenewal('${r.id}','${r.user_id}')">ခွင့်ပြု</button>
+        <button class="btn ghost sm" onclick="rejectRenewal('${r.id}')">မခွင့်ပြု</button>
+      </div>
+    `;
+    list.appendChild(item);
+  }
+}
+
+window.approveRenewal = async (id, userId) => {
+  const months = prompt('ခွင့်ပြုမည့် လအရေအတွက် (1-60):', '1');
+  if (!months) return;
+  const m = parseInt(months);
+  const trialEnd = new Date(Date.now() + m * 30 * 86400000);
+  await sb.from('profiles').update({ trial_end: trialEnd.toISOString(), plan_months: m, status: 'active', is_banned: false }).eq('id', userId);
+  await sb.from('renewals').update({ status: 'approved', granted_months: m }).eq('id', id);
+  toast(`${m} လ ခွင့်ပြုပြီးပါပြီ ✅`, 2000);
+  loadAdminRenewals();
+};
+
+window.rejectRenewal = async (id) => {
+  await sb.from('renewals').update({ status: 'rejected' }).eq('id', id);
+  loadAdminRenewals();
+};
+
+async function loadAdminReports() {
+  const { data } = await sb.from('reports').select('*').order('created_at', { ascending: false });
+  const list = $('adminReportList');
+  list.innerHTML = (data || []).length === 0 ? '<p class="muted center">တိုင်ကြားချက် မရှိပါ</p>' : '';
+  for (const r of (data || [])) {
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    item.innerHTML = `
+      <div style="display:flex;justify-content:space-between">
+        <b>${r.target_name}</b>
+        <span class="chip ${r.status === 'resolved' ? '' : 'warn'}">${r.status}</span>
+      </div>
+      <p class="muted small">${r.reason}</p>
+      <span class="muted tiny">By: ${r.reporter_name || 'Anonymous'} • ${r.address || ''}</span>
+      <div class="row">
+        <button class="btn primary sm" onclick="resolveReport('${r.id}')">ဖြေရှင်း</button>
+      </div>
+    `;
+    list.appendChild(item);
+  }
+}
+
+window.resolveReport = async (id) => {
+  await sb.from('reports').update({ status: 'resolved' }).eq('id', id);
+  toast('ဖြေရှင်းပြီးပါပြီ', 2000);
+  loadAdminReports();
+};
+
+async function loadAdminPosts() {
+  const { data } = await sb.from('posts').select('*, profiles(name)').order('created_at', { ascending: false }).limit(100);
+  const list = $('adminPostList');
+  list.innerHTML = '';
+  for (const p of (data || [])) {
+    const item = document.createElement('div');
+    item.className = 'user-item';
+    item.innerHTML = `
+      <b>${p.title}</b> <span class="muted tiny">— ${p.profiles?.name || ''}</span>
+      <p class="muted small">${(p.content || '').slice(0, 100)}...</p>
+      <div class="row">
+        <button class="btn ghost sm" onclick="adminHidePost('${p.id}')">${p.status === 'hidden' ? 'ပြန်ပြ' : 'Hide'}</button>
+        <button class="btn danger sm" onclick="adminDeletePost('${p.id}')">ဖျက်</button>
+      </div>
+    `;
+    list.appendChild(item);
+  }
+}
+
+window.adminHidePost = async (id) => {
+  const { data } = await sb.from('posts').select('status').eq('id', id).single();
+  await sb.from('posts').update({ status: data.status === 'hidden' ? 'active' : 'hidden' }).eq('id', id);
+  loadAdminPosts();
+};
+
+window.adminDeletePost = async (id) => {
+  if (!confirm('ဖျက်ရန် သေချာပါသလား?')) return;
+  await sb.from('posts').update({ status: 'deleted' }).eq('id', id);
+  loadAdminPosts();
+};
+
+// ===== LOCKED / RENEWAL =====
+$('btnRequestRenew').onclick = async () => {
+  if (!currentProfile) return;
+  await sb.from('renewals').insert({
+    user_id: currentProfile.id,
+    name: currentProfile.name,
+    business_name: currentProfile.business_name,
+    phone: currentProfile.phone,
+    email: currentProfile.email,
+    message: 'သက်တမ်းတိုးရန် တောင်းဆိုပါသည်'
+  });
+  setMsg('lockMsgBox', 'တောင်းဆိုမှု ပို့ပြီးပါပြီ။ Admin မှ ခွင့်ပြုသည်အထိ စောင့်ပါ။', true);
+};
+
+// ===== LIGHTBOX =====
+window.viewImage = (src) => {
+  $('lightboxImg').src = src;
+  $('lightbox').hidden = false;
+};
+$('lightbox').onclick = () => $('lightbox').hidden = true;
+
+// ===== PREVIEW =====
+$('poImage').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { $('poPreview').src = reader.result; $('poPreview').style.display = 'block'; };
+  reader.readAsDataURL(file);
+};
+
+</script>
+</body>
+</html>
